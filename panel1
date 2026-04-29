@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# ====================================================
+#       AUTHE STUDIO MANAGER - FIXED VERSION
+#      Developed by @AuthEStudio & @JishnuTech69
+# ====================================================
+
 # Colors for output - RED THEME
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -49,14 +54,12 @@ panel_manager() {
             1) 
                 print_status "Launching AuthE Panel Installer"
                 bash <(curl -s https://raw.githubusercontent.com/nobita329/The-Coding-Hub/refs/heads/main/srv/panel/pterodactyl.sh)
-                print_success "Panel Installation Complete"
                 ;;
             2) 
                 if [ ! -d /var/www/pterodactyl ]; then
                     print_error "Panel not installed!"
                 else
                     cd /var/www/pterodactyl && php artisan p:user:make
-                    print_success "User process finished"
                 fi
                 ;;
             3) 
@@ -169,3 +172,56 @@ uninstaller_manager() {
     esac
     read -p "Cleanup complete. Enter to return..."
 }
+
+# ====================================================
+# 4. SYSTEM INFO
+# ====================================================
+system_info() {
+    print_header_rule
+    echo -e "${WHITE} Hostname: $(hostname)"
+    echo -e " OS:       $(uname -srm)"
+    echo -e " Uptime:   $(uptime -p)"
+    echo -e " Memory:   $(free -h | awk '/Mem:/ {print $3"/"$2}')"
+    print_header_rule
+    read -p "Press Enter to return..."
+}
+
+# ====================================================
+# MAIN INTERFACE
+# ====================================================
+show_menu() {
+    clear
+    print_header_rule
+    authe_banner
+    print_header_rule
+    echo -e "${WHITE}${BOLD}  1)${NC} ${RED}Panel Installation / Management${NC}"
+    echo -e "${WHITE}${BOLD}  2)${NC} ${RED}Wings Installation / Helper${NC}"
+    echo -e "${WHITE}${BOLD}  3)${NC} ${RED}Uninstaller / Cleanup${NC}"
+    echo -e "${WHITE}${BOLD}  4)${NC} ${RED}System Information${NC}"
+    echo -e "${WHITE}${BOLD}  0)${NC} ${RED}Exit${NC}"
+    print_header_rule
+    echo -ne "${YELLOW}📝 Select an option [0-4]: ${NC}"
+}
+
+# --- THE START COMMANDS ---
+# This is what makes the script actually run!
+clear
+authe_banner
+sleep 1.5
+
+while true; do
+    show_menu
+    read -r choice
+    case $choice in
+        1) panel_manager ;;
+        2) wings_manager ;;
+        3) uninstaller_manager ;;
+        4) system_info ;;
+        0) 
+            echo -e "${GREEN}Exiting AuthE Studio Manager...${NC}"
+            exit 0 ;;
+        *) 
+            echo -e "${RED}Invalid option!${NC}"
+            sleep 1 ;;
+    esac
+done
